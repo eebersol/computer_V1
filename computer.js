@@ -186,13 +186,42 @@ function ft_sqrt(n, g)
 	return ft_sqrt(n, ng);
 }
 
+
 function reduceEquation()
 {
 	for (let i = 0; i < this.equation.length; i++)
 	{
-		this.equation[i] 		= this.equation[i].replace('X^0', '1').replace('X^1', 'X').replace('*X', 'X');
+		console.log('After epuration ' + this.equation[i])
+		while (this.equation[i].match(/X\^0/gi))
+			this.equation[i] 		= this.equation[i].replace('X^0', '1')
+		while (this.equation[i].match(/\* X\^1/gi))
+			this.equation[i] 		= this.equation[i].replace('* X^1', 'X')
+		while (this.equation[i].match(/\+ X\^1/gi))
+			this.equation[i] 		= this.equation[i].replace('+ X^1', '+ 1 X')
+		while (this.equation[i].match(/\- X\^1/gi))
+			this.equation[i] 		= this.equation[i].replace('- X^1', '- 1 X')
+		while (this.equation[i].match(/\* X\^2/gi))
+			this.equation[i] 		= this.equation[i].replace('* X^2', 'X^2').trim();
+		while (this.equation[i].match(/\+ X\^2/gi))
+			this.equation[i] 		= this.equation[i].replace('+ X^2', '+ 1 X^2')
+		while (this.equation[i].match(/\- X\^2/gi))
+			this.equation[i] 		= this.equation[i].replace('- X^2', '- 1 X^2')
+
+		console.log('After epuration ' + this.equation[i])
 		if (['+', '-'].indexOf(this.equation[i][0]) != -1 && this.equation[i][1] == '0')
 			this.equation[i] 	= '';
+		if (this.equation[i].includes('*') && this.equation[i].includes('X') && !this.equation[i].includes('X^2'))
+		{
+			while (this.equation[i].match(/X/gi))
+				this.equation[i] 		= this.equation[i].replace('X', '').trim();
+			this.equation[i] = eval(this.equation[i]) + 'X';
+		}
+		if (this.equation[i].includes('*') && this.equation[i].includes('X^2'))
+		{
+			while (this.equation[i].match(/X\^2/gi))
+				this.equation[i] 		= this.equation[i].replace('X^2', '').trim();
+			this.equation[i] = eval(this.equation[i]) + 'X^2';
+		}
 	}
 }
 
@@ -280,6 +309,18 @@ function solveDoubleSign(tab)
 	}
 	return tmp;
 }
+
+function check_negative (str)
+{
+	for (let i = 0; i < str.length; i++)
+	{
+		if (str[i] == '^' && str[i+1] == '-')
+		{
+			console.log('Wrong format negative power.')
+			process.exit(0);
+		}
+	}
+}
 ///////////////////////////////////////////////////// 		BEGIN COMPUTER 		///////////////////////////////////////////////////////////////////////////////////
 
 function computer()
@@ -290,6 +331,7 @@ function computer()
 			&& process.argv[2].match(this.regexp) 
 				&& process.argv[2].match("="))
 	{
+		check_negative(process.argv[2]);
 		this.equation 	= moveLeft(process.argv[2].trim()).match(this.regexp)
 		this.equation = solveDoubleSign(this.equation);
 		reduceEquation();
