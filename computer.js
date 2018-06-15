@@ -319,6 +319,14 @@ function check_negative (str)
 			console.log('Wrong format negative power.')
 			process.exit(0);
 		}
+		if (str[i] == '^' && str[i+1] && i+2 < str.length)
+		{
+			if (!isNaN(str[i+2]))
+			{
+				console.log('Wrong format power to hight.')
+				process.exit(0);
+			}
+		}
 	}
 }
 ///////////////////////////////////////////////////// 		BEGIN COMPUTER 		///////////////////////////////////////////////////////////////////////////////////
